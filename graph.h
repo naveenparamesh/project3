@@ -22,9 +22,10 @@ class Graph{
         string editFormat(string s);
         void storeInfoInGraph(string theString);
         void printResults(vector<Species*> results);
-        void optionOne(int num_subtypes, string sp, int order);
+        vector<string> optionOne(int num_subtypes, string sp, int order);
         void optionTwo(string sp);
         void optionThree(string sp1, string sp2, string sp3);
+        
     
     private:
     

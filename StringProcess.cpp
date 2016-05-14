@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
 #include <vector>
@@ -8,13 +9,16 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <math.h>
+#include <algorithm>
+#include "graph.h"
 using namespace std;
 using namespace boost;
 
 
 set<string> stop_words;	//set of all the stop words
-vector<int> queryTF; // holds TF of query
 vector<string> all_words;//holds all the cleaned words from all documents
+
 
 
 
@@ -450,7 +454,11 @@ string getModifiedWords(string line){
 		if(!isStopWord(stop_words, word)){ //if its not a stop word, then add it
 			porter_word = porter(word);
 			modified_line += porter_word + "\n";
-			all_words.push_back(porter_word);
+			bool isPresent = (find(all_words.begin(), all_words.end(), porter_word) != all_words.end());
+			if(!isPresent){//if the word isn't already in the list of all the words, then add it
+				all_words.push_back(porter_word);	
+			}
+
 		}//if
 	}//for
 
@@ -488,74 +496,95 @@ bool testModifiedWords(string cleaned_file_name){
 	return result;
 }//testModifiedWords
 
-void storeAndCleanMaps(){
+struct document_info{
+	int docNum;
+	double docDistance;
+	document_info(int docNumber, double distance){
+		docNum = docNumber;
+		docDistance = distance;
+	}
+};
 
-
-
+bool mySortFunction (document_info i, document_info j) { 
+	return (i.docDistance < j.docDistance);
 }
 
 
 int main(){
 
+	// These line take the file name as input and passes it in as an argument
+	// to the graph variable constructor, which sets up the graph
+	string fileName = "./graph_hyponymy.txt";
+	Graph* knowledge_base = new Graph(fileName);
+	double threshold = 0.51;
+
+
 	// string result = step1c("sky");
 	// cout << "Became " << result << endl;
+	//cout << "breed m is: " << m("breed") << endl;
 
-	// hashStopWords(stop_words); //store stop words
-	// ofstream outFile; // used to write to cleaned files
-	// string modified_words = ""; // used to contain to correct words to add to cleaned files 
-	 string line;//used to read each line from original files
-	// int switch_val;//holds input value in int form
+	hashStopWords(stop_words); //store stop words
+	ofstream outFile; // used to write to cleaned files
+	string modified_words = ""; // used to contain to correct words to add to cleaned files 
+	string line;//used to read each line from original files
+	int switch_val;//holds input value in int form
 
-	// string input = "";
-	// cout << "Welcome to our Project 2 interface: " << endl;
-	// cout << "Type 1 if you want to clean your data and 'q' to exit" << endl;
-	// cin >> input;
+	string input = "";
+	cout << "Welcome to our Project 3 interface: " << endl;
+	cout << "Type 1 if you want to clean your data and 'q' to exit" << endl;
+	cin >> input;
 
-	// if(input == "1"){
-	// 	switch_val = 1;
-	// }//if
-	// else if (input == "q"){
-	// 	switch_val = 2;
-	// }//else if
+	if(input == "1"){
+		switch_val = 1;
+	}//if
+	else if (input == "q"){
+		switch_val = 2;
+	}//else if
 
-	// switch(switch_val){
-	// 	case 1:{
-	// 		       // loop over all 40 of the original files
-	// 		       for(int i = 1; i < 41; i++){
-	// 			       string file_path = "";
-	// 			       string index_to_str = lexical_cast<string>(i);
-	// 			       file_path = "./Original_Files/txt" + index_to_str + ".txt";//dynamically set file names
-	// 			       //ifstream inFile(file_path.c_str());
-	// 			       ifstream inFile;
-	// 			       inFile.open(file_path);//open file
-	// 			       if(inFile.is_open()){
-	// 				       while(getline (inFile, line)){
-	// 					       modified_words += getModifiedWords(line); // get stemmed, and stop words removed, words
-	// 				       }//while
-	// 				       inFile.close();
-	// 				       outFile.open("./corpus/txt" + index_to_str + "_cleaned.txt"); // open corresponding cleaned file
-	// 				       outFile << modified_words << endl; // write to it
-	// 				       outFile.close();
-	// 				       modified_words = ""; // clear to be used for next line
-	// 			       }//if
-	// 			       else{
-	// 				       cout << "Can't open the main files" << endl;
-	// 			       }//else
-	// 		       }//for
-	// 		       break;
-	// 	       }//case 1
+	switch(switch_val){
+		case 1:{
+			       // loop over all 40 of the original files
+			       for(int i = 1; i < 41; i++){
+				       string file_path = "";
+				       string index_to_str = lexical_cast<string>(i);
+				       file_path = "./Original_Files/txt" + index_to_str + ".txt";//dynamically set file names
+				       //ifstream inFile(file_path.c_str());
+				       ifstream inFile;
+				       inFile.open(file_path);//open file
+				       if(inFile.is_open()){
+					       while(getline (inFile, line)){
+						       modified_words += getModifiedWords(line); // get stemmed, and stop words removed, words
+					       }//while
+					       inFile.close();
+					       outFile.open("./corpus/txt" + index_to_str + "_cleaned.txt"); // open corresponding cleaned file
+					       outFile << modified_words << endl; // write to it
+					       outFile.close();
+					       modified_words = ""; // clear to be used for next line
+				       }//if
+				       else{
+					       cout << "Can't open the main files" << endl;
+				       }//else
+			       }//for
+			       break;
+		       }//case 1
 
-	// 	case 2:{
-	// 		       cout << "Exiting..." << endl;
-	// 		       break;
-	// 	       }//case 2
-	// 	default:{
-	// 			cout << "Not a valid input." << endl;
-	// 		}//default
-	// }//switch
+		case 2:{
+			       cout << "Exiting..." << endl;
+			       break;
+		       }//case 2
+		default:{
+				cout << "Not a valid input." << endl;
+			}//default
+	}//switch
 
 
-	double matrix[40][all_words.size()];
+	//double matrix[40][all_words.size()];
+	vector<vector<double>> matrix;
+	for(int i = 0; i < 40; i++){
+		for(int j = 0; j < all_words.size(); j++){
+			matrix.at(i).push_back(0.00);
+		}
+	}
 	map<string, int> numOccurWordInDoc;
 	double numWordsInDoc = 0;
 	string cleaned_word = "";
@@ -577,11 +606,12 @@ int main(){
 						else {
 							numOccurWordInDoc[line] += 1;
 						}
-						
+
 					}
 				}//while
 				double term_frequency = (numOccurWordInDoc[cleaned_word] / numWordsInDoc);
-				matrix[i - 1][word_index] = term_frequency;
+				//matrix[i - 1][word_index] = term_frequency;
+				matrix.at(i - 1).at(word_index) = term_frequency;
 				numWordsInDoc = 0.00; // resetting for next doc
 				numOccurWordInDoc[cleaned_word] = 0; // resetting for next doc
 				inFile.close();
@@ -592,31 +622,213 @@ int main(){
 			}//else
 		}//for
 	}
+	cout << "got here" << endl;
 	string query = "";
 	vector<string> cleaned_query;
-	string cleaned_query = "";
-	cout << "Please enter a query: " << endl;
-	
-	getline(cin, query);
-	
-	regex rgExpression("[a-zA-Z]+");
+	map<string, int> numOccurWordInQuery;
 
-	for(sregex_iterator it(query.begin(), query.end(), rgExpression), it_end; it != it_end; ++it ){
+
+	while(getline(cin, query) && query == ""){
+		cout << "Please enter a query: " << endl;
+
+	}
+	cout << "query is: " << query << endl;
+	regex wordrgx("[a-zA-Z]+");
+
+	for(sregex_iterator it(query.begin(), query.end(), wordrgx), it_end; it != it_end; ++it ){
 		string word = (*it)[0];
 		transform(word.begin(), word.end(), word.begin(), ::tolower);
 		if(!isStopWord(stop_words, word)){ //if its not a stop word, then add it
-			porter_word = porter(word);
-			cleaned_query.push_back(porter_word);
+			cleaned_query.push_back(porter(word));
 		}//if
 	}//for
-	
-	for(int word = 0; word < cleaned_query.size(); word++){
-		
+	//double queryTF[all_words.size()]; // holds TF of query
+	vector<double> queryTF;
+	for(int i = 0; i < all_words.size(); i++){
+		queryTF.at(i) = 0.00;
 	}
-	
-	
-	
-	
+
+	for(int word = 0; word < cleaned_query.size(); word++){
+		string curr_word = cleaned_query.at(word);
+		int word_index = -1;
+		for(int i = 0; i < all_words.size(); i++){
+			if(curr_word == all_words.at(i)){
+				//cout << all_words.at(i) << " is occuring at: " << i << endl;
+				word_index = i;
+				break;
+			}
+		}
+		if(word_index != -1){ // only if word can be found
+			for(int i = 0; i < cleaned_query.size(); i++){
+				if(cleaned_query.at(i) == curr_word){
+					if(numOccurWordInQuery.find(cleaned_query.at(i)) == numOccurWordInQuery.end()){//if it isn't found, initialize
+						numOccurWordInQuery[cleaned_query.at(i)] = 1;	
+					}
+					else {
+						numOccurWordInQuery[cleaned_query.at(i)] += 1;
+					}
+				}
+			}
+			queryTF.at(word_index) = (numOccurWordInQuery[curr_word] / (cleaned_query.size() * 1.00));
+		}
+	}
+
+	vector<document_info> document_infos;
+	double sum_differences;
+	for(int i = 0; i < 40; i++){
+		sum_differences = 0;
+		for(int word = 0; word < all_words.size(); word++){
+			sum_differences += pow((queryTF[word] - matrix[i][word]), 2.0);
+		}
+		double distance = sqrt(sum_differences);
+		document_infos.push_back(document_info(i + 1, distance));
+	}
+
+	sort(document_infos.begin(), document_infos.end(), mySortFunction);
+
+	if(document_infos.at(0).docDistance < threshold){
+		int start_index = -1;
+		int cleaned_start = -1;
+		start_index = all_words.size();
+		cleaned_start = cleaned_query.size();
+		vector<vector<string>> newWords;
+		for(int i = 0; i < cleaned_query.size(); i++){
+			newWords.push_back(knowledge_base->optionOne(3, "", 1));
+		}
+
+		for(int i = 0; i < newWords.size(); i++){
+			for(int j = 0; j < newWords.at(i).size(); j++){
+				string new_word = newWords.at(i).at(j);
+				bool qisPresent = (find(cleaned_query.begin(), cleaned_query.end(), new_word) != cleaned_query.end());
+				if(!qisPresent){//if the word isn't already in the list of all the words, then add it
+					cleaned_query.push_back(new_word);
+				}
+
+				bool isPresent = (find(all_words.begin(), all_words.end(), new_word) != all_words.end());
+				if(!isPresent){//if the word isn't already in the list of all the words, then add it
+					all_words.push_back(new_word);	
+				}
+			}
+		}
+
+		for(int word_index = start_index; word_index < all_words.size(); word_index++){
+			cleaned_word = all_words.at(word_index);
+			for(int i = 1; i < 41; i++){
+				string file_path = "";
+				string index_to_str = lexical_cast<string>(i);
+				file_path = "./corpus/txt" + index_to_str + "_cleaned.txt";//dynamically set file names
+				ifstream inFile;
+				inFile.open(file_path);//open file
+				if(inFile.is_open()){
+					while(getline (inFile, line)){
+						numWordsInDoc += 1.00;
+						if(line == cleaned_word){
+							if(numOccurWordInDoc.find(line) == numOccurWordInDoc.end()){//if it isn't found, initialize
+								numOccurWordInDoc[line] = 1;	
+							}
+							else {
+								numOccurWordInDoc[line] += 1;
+							}
+
+						}
+					}//while
+					double term_frequency = (numOccurWordInDoc[cleaned_word] / numWordsInDoc);
+					//matrix[i - 1][word_index] = term_frequency;
+					matrix.at(i - 1).push_back(term_frequency);
+					numWordsInDoc = 0.00; // resetting for next doc
+					numOccurWordInDoc[cleaned_word] = 0; // resetting for next doc
+					inFile.close();
+					line = "";
+				}//if
+				else{
+					cout << "Can't open the corpus file: "<< file_path << endl;
+				}//else
+			}//for
+		}
+
+		for(int i = cleaned_start; i < all_words.size(); i++){
+			queryTF.push_back(0.00);
+		}
+
+		for(int word = cleaned_start; word < cleaned_query.size(); word++){
+			string curr_word = cleaned_query.at(word);
+			int word_index = -1;
+			for(int i = 0; i < all_words.size(); i++){
+				if(curr_word == all_words.at(i)){
+					//cout << all_words.at(i) << " is occuring at: " << i << endl;
+					word_index = i;
+					break;
+				}
+			}
+			if(word_index != -1){ // only if word can be found
+				for(int i = 0; i < cleaned_query.size(); i++){
+					if(cleaned_query.at(i) == curr_word){
+						if(numOccurWordInQuery.find(cleaned_query.at(i)) == numOccurWordInQuery.end()){//if it isn't found, initialize
+							numOccurWordInQuery[cleaned_query.at(i)] = 1;	
+						}
+						else {
+							numOccurWordInQuery[cleaned_query.at(i)] += 1;
+						}
+					}
+				}
+				queryTF.at(word_index) = (numOccurWordInQuery[curr_word] / (cleaned_query.size() * 1.00));
+			}
+		}
+
+
+		document_infos.clear();
+		for(int i = 0; i < 40; i++){
+			sum_differences = 0;
+			for(int word = 0; word < all_words.size(); word++){
+				sum_differences += pow((queryTF[word] - matrix[i][word]), 2.0);
+			}
+			double distance = sqrt(sum_differences);
+			document_infos.push_back(document_info(i + 1, distance));
+		}
+
+		sort(document_infos.begin(), document_infos.end(), mySortFunction);
+
+		if(document_infos.at(0).docDistance < threshold){
+			cout << "no results for this query..." << endl;
+		}
+		else {
+			cout << "your query is most likely located at: " << endl;
+			for(int i = 0; i < document_infos.size(); i++){
+				cout << "document " << document_infos.at(i).docNum << endl;
+			}
+		}
+
+	}
+
+	else {
+		cout << "your query is most likely located at: " << endl;
+		for(int i = 0; i < document_infos.size(); i++){
+			cout << "document " << document_infos.at(i).docNum << endl;
+		}
+	}
+
+
+
+
+	// cout << "your query is most likely located at: " << endl;
+	// for(int i = 0; i < document_infos.size(); i++){
+	//   	cout << "document " << document_infos.at(i).docNum << endl;
+	//   }
+
+
+
+
+
+
+
+	// for(int i = 0; i < all_words.size(); i++){
+	// 	cout << queryTF[i] << "  ";
+	// }
+
+
+
+
+
 	// for(int document = 0; document < 40; document++){
 	// 	for(int word_index = 0; word_index < all_words.size(); word_index++){
 	// 		cout << matrix[document][word_index] << "  ";

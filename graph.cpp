@@ -103,9 +103,10 @@ void Graph::storeInfoInGraph(string fileLine){
 // a given order. After finding the location of the species in the vector, it sets its distance to 0 and pushes it onto the queue
 // it then uses bfs to go through the children of the given species and its children and so on until it gets to a certain order and 
 // displays that species, if it didn't already reach the number of given subtypes allowed to be displayed
-void Graph::optionOne(int num_subtypes, string sp, int order){
+vector<string> Graph::optionOne(int num_subtypes, string sp, int order){
    cout << num_subtypes << " subtypes of " << sp << " of order " << order << " are: " << endl;
    queue<Species*> my_queue;
+   vector<string> results;
    int num_results = 0;
    int indexOfSource = getIndex(sp);
    Species* source;
@@ -114,7 +115,7 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
    }
    else{//has no subtypes
        cout << "Has no subtypes" << endl;
-       return;
+       return vector<string>(0);
    }
    
    source->distance = 0;
@@ -127,10 +128,11 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
             break; //breaks out of while so it can print the results
         }
         //process u here
-         if(u->distance == order){//if it reached the given order
-            cout << u->name << endl; // display name
+         //if(u->distance == order){//if it reached the given order
+            //cout << u->name << endl; // display name
+            results.push_back(u->name);
             num_results++; // increment the amount of subtypes displayed
-         }
+         //}
        int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//meaning that species has subclasses
         Species* start = subclasses.at(indexOfSpecies)->next;
@@ -141,6 +143,7 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
          }
        }
    }//end of while loop
+   return results;
 }
 
 // given a species sp, this function returns the number of total subspecies that
