@@ -2,7 +2,7 @@
 
 COMPILE AND RUN USING :
 
-g++ -std=c++0x StringProcess.cpp graph.cpp species.cpp -Wno-deprecated -lboost_regex && ./a.out 1
+g++ -std=c++0x main.cpp graph.cpp species.cpp -Wno-deprecated -lboost_regex && ./a.out 1
 
 MAKE SURE YOU ARE IN THE DIRECTORY WHERE "StringProcess.cpp" IS LOCATED WHEN U COMPILE
 AND RUN.
