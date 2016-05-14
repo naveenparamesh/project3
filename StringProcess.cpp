@@ -633,7 +633,7 @@ int main(){
 		cout << "Please enter a query: " << endl;
 
 	}
-	cout << "query is: " << query << endl;
+	//cout << "query is: " << query << endl;
 	regex wordrgx("[a-zA-Z]+");
 
 	for(sregex_iterator it(query.begin(), query.end(), wordrgx), it_end; it != it_end; ++it ){
@@ -795,7 +795,7 @@ int main(){
 		}
 		else {
 			cout << "your query is most likely located at: " << endl;
-			for(int i = 0; i < document_infos.size(); i++){
+			for(int i = 0; i < 6; i++){
 				cout << "document " << document_infos.at(i).docNum << endl;
 			}
 		}
@@ -804,7 +804,7 @@ int main(){
 
 	else {
 		cout << "your query is most likely located at: " << endl;
-		for(int i = 0; i < document_infos.size(); i++){
+		for(int i = 0; i < 6; i++){
 			cout << "document " << document_infos.at(i).docNum << endl;
 		}
 	}

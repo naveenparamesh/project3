@@ -114,7 +114,7 @@ vector<string> Graph::optionOne(int num_subtypes, string sp, int order){
        source = subclasses.at(indexOfSource);
    }
    else{//has no subtypes
-       cout << "Has no subtypes" << endl;
+      // cout << "Has no subtypes" << endl;
        return vector<string>(0);
    }
    
