@@ -516,7 +516,7 @@ int main(){
 	// to the graph variable constructor, which sets up the graph
 	string fileName = "./graph_hyponymy.txt";
 	Graph* knowledge_base = new Graph(fileName);
-	double threshold = 0.51;
+	double threshold = 0.12;
 
 
 	// string result = step1c("sky");
@@ -579,9 +579,11 @@ int main(){
 
 
 	//double matrix[40][all_words.size()];
-	vector<vector<double>> matrix;
+	vector<vector<double>> matrix(40);
 	for(int i = 0; i < 40; i++){
 		for(int j = 0; j < all_words.size(); j++){
+				// cout << "i is: " << i << endl;
+				// cout << "j is: " << j << endl;
 			matrix.at(i).push_back(0.00);
 		}
 	}
@@ -622,7 +624,6 @@ int main(){
 			}//else
 		}//for
 	}
-	cout << "got here" << endl;
 	string query = "";
 	vector<string> cleaned_query;
 	map<string, int> numOccurWordInQuery;
@@ -643,7 +644,7 @@ int main(){
 		}//if
 	}//for
 	//double queryTF[all_words.size()]; // holds TF of query
-	vector<double> queryTF;
+	vector<double> queryTF(all_words.size());
 	for(int i = 0; i < all_words.size(); i++){
 		queryTF.at(i) = 0.00;
 	}
@@ -678,7 +679,7 @@ int main(){
 	for(int i = 0; i < 40; i++){
 		sum_differences = 0;
 		for(int word = 0; word < all_words.size(); word++){
-			sum_differences += pow((queryTF[word] - matrix[i][word]), 2.0);
+			sum_differences += pow((queryTF.at(word) - matrix.at(i).at(word)), 2.0);
 		}
 		double distance = sqrt(sum_differences);
 		document_infos.push_back(document_info(i + 1, distance));
@@ -693,7 +694,8 @@ int main(){
 		cleaned_start = cleaned_query.size();
 		vector<vector<string>> newWords;
 		for(int i = 0; i < cleaned_query.size(); i++){
-			newWords.push_back(knowledge_base->optionOne(3, "", 1));
+			string the_word = knowledge_base->editFormat(cleaned_query.at(i));
+			newWords.push_back(knowledge_base->optionOne(3, the_word, 1));
 		}
 
 		for(int i = 0; i < newWords.size(); i++){
@@ -780,7 +782,7 @@ int main(){
 		for(int i = 0; i < 40; i++){
 			sum_differences = 0;
 			for(int word = 0; word < all_words.size(); word++){
-				sum_differences += pow((queryTF[word] - matrix[i][word]), 2.0);
+				sum_differences += pow((queryTF.at(word) - matrix.at(i).at(word)), 2.0);
 			}
 			double distance = sqrt(sum_differences);
 			document_infos.push_back(document_info(i + 1, distance));
@@ -810,31 +812,6 @@ int main(){
 
 
 
-	// cout << "your query is most likely located at: " << endl;
-	// for(int i = 0; i < document_infos.size(); i++){
-	//   	cout << "document " << document_infos.at(i).docNum << endl;
-	//   }
-
-
-
-
-
-
-
-	// for(int i = 0; i < all_words.size(); i++){
-	// 	cout << queryTF[i] << "  ";
-	// }
-
-
-
-
-
-	// for(int document = 0; document < 40; document++){
-	// 	for(int word_index = 0; word_index < all_words.size(); word_index++){
-	// 		cout << matrix[document][word_index] << "  ";
-	// 	}
-	// 	cout << endl;
-	// }
 
 
 
