@@ -23,7 +23,7 @@ vector<string> all_words;//holds all the cleaned words from all documents
 
 
 // store stop words in a set
-// read the stop words from the file and just put each word in the set
+// read the stop words from the file and put each word in the set
 void hashStopWords(set<string>& stop_words){
 	string file_path = "./stop_words.txt";
 	ifstream inFile(file_path.c_str());
@@ -151,7 +151,7 @@ string replace_ending(string word, string the_ending, string newending){
 	return regex_replace(word, ending, newending);
 }
 
-// just following the first step of the porter algorithm
+//following the first step of the porter algorithm
 string step1a(string word){
 	// SSES		->		SS		    		caresses	->		caress
 	// IES		->		I		    		ponies		->		poni
@@ -177,7 +177,7 @@ string step1a(string word){
 
 }//step1a
 
-// just following the first step of the porter algorithm
+// following the first step of the porter algorithm
 string step1b(string word){
 	// (m>0) EED	->		EE		  feed			->		feed
 	//  							  agreed		->		agree
@@ -231,7 +231,7 @@ string step1b(string word){
 
 }//step1b
 
-// just following the first step of the porter algorithm
+//following the first step of the porter algorithm
 string step1c(string word){
 	//		(*v*) Y		->		I		    		happy		->		happi
 	//   											sky		->		sky
@@ -243,7 +243,7 @@ string step1c(string word){
 	return result;
 }//step1c
 
-// just following the second step of the porter algorithm
+//following the second step of the porter algorithm
 string step2(string word){
 	string result = word;
 	if(ends(word, "ational") && m(stem(word, "ational")) > 0){
@@ -308,7 +308,7 @@ string step2(string word){
 
 }//step2
 
-// just following the third step of the porter algorithm
+//following the third step of the porter algorithm
 string step3(string word){
 	string result = word;
 	if(ends(word, "icate") && m(stem(word, "icate")) > 0){
@@ -335,7 +335,7 @@ string step3(string word){
 	return result;
 }//step3
 
-// just following the fourth step of the porter algorithm
+//following the fourth step of the porter algorithm
 string step4(string word){
 	string result = word;
 	if(ends(word, "al") && m(stem(word, "al")) > 1){
@@ -398,7 +398,7 @@ string step4(string word){
 	return result;
 }//setp4
 
-// just following the fifth step of the porter algorithm
+//following the fifth step of the porter algorithm
 string step5a(string word){
 	string result = word;
 	if(ends(word, "e") && m(stem(word, "e")) > 1){
@@ -410,7 +410,7 @@ string step5a(string word){
 	return result;
 }//step5a
 
-// just following the fifth step of the porter algorithm
+//following the fifth step of the porter algorithm
 string step5b(string word){
 	string result = word;
 	if(m(word) > 1 && ends_doubleC(word) && ends(word, "l")){
@@ -419,7 +419,7 @@ string step5b(string word){
 	return result;
 }//step5b
 
-//the porter algorithm, just calls each step
+//the porter algorithm,calls each step
 // and stores the running value into word,
 // which eventually gets returned fully, and correctly stemmed
 string porter(string word){
@@ -443,7 +443,7 @@ string porter(string word){
 // that stemmed word along with a newline, so that evey stemmed word shows up on its own
 // line in the cleaned files, onto the modified line string. The string will finally
 // have all the stemmed words and no stop words in it from the orginally given line
-// which it then just returns
+// which it then returns
 string getModifiedWords(string line){
 	string modified_line = "";
 	regex rgExpression("[a-zA-Z][a-zA-Z]+");
@@ -507,7 +507,7 @@ struct document_info{
 
 bool mySortFunction (document_info i, document_info j) { 
 	return (i.docDistance < j.docDistance);
-}
+}//custom sort function
 
 
 int main(){
